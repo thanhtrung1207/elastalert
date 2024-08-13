@@ -1,0 +1,64 @@
+# name: Pending status alert
+# type: frequency
+# index: http.zengi_trans_notify.success.2-2024.08.06
+# num_events: 0
+# threshold: 1
+# timeframe:
+#   seconds: 30
+# filter:
+# - bool:
+#     must:
+#     - term:
+#         pending: true
+#     - bool:
+#         must_not:
+#         - exists:
+#             field: data
+# timestamp_field: createdDate
+# alert:
+# - email
+# email:
+# - trungtrann3108@gmail.com
+# alert_text_type: alert_text_only
+# alert_text: "No data update received in the last 10 minutes for the document with pending status."
+# smtp_host: smtp.gmail.com
+# smtp_port: 587
+# smtp_auth_file: smtp.auth.yml
+name: Data exists alert
+type: frequency
+index: http.zengi_trans_notify.success.2-2024.08.12
+num_events: 1
+threshold: 1
+timeframe:
+  minutes: 1 
+filter:
+- bool:
+    must:
+    - term:
+        pending: true
+    - bool:
+        must_not:
+        - exists:
+            field: data
+timestamp_field: createdDate
+
+match_enhancements:
+  - elastalert.enhancements.TimeEnhancement
+
+alert:
+- email
+email:
+- trungtrann3108@gmail.com
+alert_text_type: alert_text_only
+alert_text: "
+New data received with pending status in the last 30 seconds.\n
+Index : {0}\n
+Timestamp : {1}\n
+ID : {2}"
+alert_text_args: ["index", "createdDate", id]
+smtp_host: smtp.gmail.com
+smtp_port: 587
+smtp_auth_file: smtp.auth.yml
+
+realert:
+  seconds: 30

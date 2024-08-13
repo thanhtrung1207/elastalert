@@ -22,11 +22,12 @@ name: Example frequency rule
 # (Required)
 # Type of alert.
 # the frequency rule type alerts when num_events events occur with timeframe time
-type: frequency
+type: any
 
 # (Required)
 # Index to search, wildcard supported
-index: logstash-*
+index: http.zengi_trans_notify.success.2-2024.08.09
+use_strftime_index: true
 
 # (Required, frequency specific)
 # Alert when this many documents matching the query occur within a timeframe
@@ -43,7 +44,10 @@ timeframe:
 # For more info: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl.html
 filter:
 - term:
-    some_field: "some_value"
+    data.isSuccess: true
+
+timestamp_field: "data.partnerTransNotifyReport.createdDate"
+
 
 # (Required)
 # The alert is use when a match is found
@@ -53,4 +57,16 @@ alert:
 # (required, email specific)
 # a list of email addresses to send alerts to
 email:
-- "elastalert@example.com"
+- "trungtrann3108@gmail.com"
+
+alert_text_type: alert_text_only
+
+alert_text: "
+Partner Code : {0}\n
+Success : {1}\n
+Timestamp : {2}"
+alert_text_args: ["data.partnerTransNotifyReport.partnerCode","data.isSuccess","data.partnerTransNotifyReport.createdDate"]
+
+smtp_host: smtp.gmail.com
+smtp_port: 587
+smtp_auth_file: smtp.auth.yml

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from .util import pretty_ts
+from datetime import datetime
+from pytz import timezone
 
 
 class BaseEnhancement(object):
@@ -15,9 +17,28 @@ class BaseEnhancement(object):
         raise NotImplementedError()
 
 
+
 class TimeEnhancement(BaseEnhancement):
     def process(self, match):
-        match['@timestamp'] = pretty_ts(match['@timestamp'])
+        # Convert UTC to desired timezone
+        utc_time = match.get('createdDate')
+        if utc_time:
+            local_time = self.convert_utc_to_local(utc_time, 'Asia/Ho_Chi_Minh')
+            match['createdDate'] = local_time
+
+    def convert_utc_to_local(self, utc_dt_str, local_tz='Asia/Ho_Chi_Minh'):
+        try:
+            utc_dt = datetime.strptime(utc_dt_str, '%Y-%m-%dT%H:%M:%S.%f%z')
+        except ValueError:
+            try:
+                utc_dt = datetime.strptime(utc_dt_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+            except ValueError:
+                utc_dt = datetime.strptime(utc_dt_str, '%Y-%m-%dT%H:%M:%SZ')
+        
+        # Convert UTC datetime to local timezone
+        local_tz = timezone(local_tz)
+        local_dt = utc_dt.astimezone(local_tz)
+        return local_dt.isoformat()
 
 
 class DropMatchException(Exception):
