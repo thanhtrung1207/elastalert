@@ -1,5 +1,5 @@
 # ElastAlert - [Docs](http://elastalert.readthedocs.org).
-## Installation.
+## Cài đặt.
 
 ### Cài đặt Python.
  1. Cài Đặt Python 3.8 và pip:
@@ -209,6 +209,11 @@ smtp_auth_file: smtp.auth.yml
 
 ```bash
 elastalert-test-rule --config path/to/config.yaml path/to/rule_file.yaml
+```
+
+### Run ElastAlert
+```bash
+python3.8 -m elastalert.elastalert --verbose --rule path/to/rule_file.yaml
 ```
 
 Lưu ý khi tạo rule phải mapping field có giá trị timestamp với timestamp_field ở ví dụ trên là `timestamp_field: "data.partnerTransNotifyReport.createdDate"`
