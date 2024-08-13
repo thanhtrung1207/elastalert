@@ -21,7 +21,7 @@ pip install --upgrade pip
 ### Cài đặt ElastAlert.
 1. Clone Repo ElastAlert từ GitHub
 ```bash
-git clone https://github.com/elastic/elastalert.git
+git clone https://github.com/Yelp/elastalert.git
 cd elastalert
 ```
 2. Cài đặt các module
@@ -66,7 +66,7 @@ alert_time_limit:
   days: 2
 
 ```
-### Các Loại `Type` thường dùng:
+### Các loại `Type` thường dùng:
 
 - Khi có một sự kiện X trong thời gian Y " (``frequency`` type)
 ```bash
@@ -217,3 +217,11 @@ python3.8 -m elastalert.elastalert --verbose --rule path/to/rule_file.yaml
 ```
 
 Lưu ý khi tạo rule phải mapping field có giá trị timestamp với timestamp_field ở ví dụ trên là `timestamp_field: "data.partnerTransNotifyReport.createdDate"`
+
+## Additional Configuration
+
+- Config cho chanel là `Telegram` gồm 2 properties: 
+
+  `telegram_bot_token`: 
+  
+  `telegram_room_id`
