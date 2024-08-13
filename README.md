@@ -205,4 +205,10 @@ smtp_auth_file: smtp.auth.yml
 
 ```
 
+### Test rule 
+
+```bash
+elastalert-test-rule --config path/to/config.yaml path/to/rule_file.yaml
+```
+
 Lưu ý khi tạo rule phải mapping field có giá trị timestamp với timestamp_field ở ví dụ trên là `timestamp_field: "data.partnerTransNotifyReport.createdDate"`
