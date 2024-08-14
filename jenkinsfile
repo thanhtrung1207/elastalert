@@ -1,6 +1,8 @@
 pipline {
     agent any
-    
+    environment{
+
+    }
     stages{
         stage('Checkout'){
             steps{
