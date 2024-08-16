@@ -4,13 +4,6 @@ pipline {
 
     }
     stages{
-        stage('Checkout'){
-            steps{
-                script{
-                    git url: 'https://10.96.24.141/UDTN/integration/microservices/data-streaming/mcs-elasticalert.git', branch: 'dev'
-                }
-            }
-        }
         stage('Build and Package'){
             steps{
                 script{
