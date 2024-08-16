@@ -17,3 +17,4 @@ build/
 my_rules
 *.swp
 *~
+myenv/
