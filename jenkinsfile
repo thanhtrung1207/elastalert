@@ -1,0 +1,12 @@
+pipeline {
+    agent any
+    stages{
+        stage('Build and Package'){
+            steps{
+                script{
+                    sh 'pip install -r requirements.txt'
+                }
+            }
+        }
+    }
+}
