@@ -1,0 +1,28 @@
+name: CDC - MSSQL
+type: any
+index: elastalert.mssql.cdc-error
+timestamp_field: '@timestamp'
+
+filter:
+- query:
+    query_string:
+      query: "database:OMNINOTIFICATION"
+- term:
+    error_occurred: "true"
+
+alert:
+- telegram
+alert_text: "
+  o  Host: {0} [UAT]\n
+  o  Database: {1}\n
+🔔 Message: DANHSACHTKDH: Total Data: {2}, CDC_TABLE: {3}"
+alert_text_args: ["host","database","total_data", "cdc_total_data"]
+alert_text_type: alert_text_only
+telegram_room_id: "-4263496026"
+telegram_bot_token: "7388639083:AAG8KCdwVkOY7nZ5DR-BDagkrHGUk7u3swg"
+realert:
+  minutes: 0
+
+aggregation:
+  seconds: 0
+
