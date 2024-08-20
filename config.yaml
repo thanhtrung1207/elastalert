@@ -8,7 +8,7 @@ run_every:
 buffer_time:
   minutes: 15
 
-es_host: localhost
+es_host: 192.168.26.239
 
 # The Elasticsearch port
 es_port: 9200

@@ -1,31 +1,32 @@
 pipeline {
     agent any
-
     stages {
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("elastalert:latest", ".")
+                    sh 'docker build -t elastalert:latest .'
                 }
             }
         }
         stage('Deploy') {
             steps {
                 script {
-                    sh """
-                    docker run -d --name elastalert \
-                    -v config.yaml \
-                    -v /home/trungtt6/elastalert/rules\
-                    elastalert:latest
-                    """
+                    sh '''
+                        docker run -d --name elastalert-container \
+                        -v $(pwd)/config.yaml:/app/config.yaml \
+                        -v $(pwd)/rules:/app/rules \
+                        elastalert:latest
+                    '''
                 }
             }
         }
     }
-
     post {
         always {
-            cleanWs()
+            script {
+                sh 'docker stop elastalert-container || true'
+                sh 'docker rm elastalert-container || true'
+            }
         }
     }
 }
