@@ -1,26 +1,31 @@
 pipeline {
     agent any
+
     stages {
-        stage('Setup Environment') {
+        stage('Build') {
             steps {
-                sh 'python3.8 -m venv venv'
-                sh './venv/bin/pip install --no-index --find-links=vendor/ -r requirements.txt --use-pep517'
+                script {
+                    docker.build("elastalert:latest", ".")
+                }
             }
         }
-        // stage('Test') {
-        //     steps {
-        //         sh './venv/bin/python -m unittest discover'
-        //     }
-        // }
         stage('Deploy') {
             steps {
-                sh 'nohup ./venv/bin/python3.8 -m elastalert.elastalert --config config.yaml --verbose > elastalert.log 2>&1 &'
+                script {
+                    sh """
+                    docker run -d --name elastalert \
+                    -v config.yaml \
+                    -v /home/trungtt6/elastalert/rules\
+                    elastalert:latest
+                    """
+                }
             }
         }
     }
+
     post {
         always {
-            sh 'rm -rf venv'
+            cleanWs()
         }
     }
 }
