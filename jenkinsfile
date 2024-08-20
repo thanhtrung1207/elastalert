@@ -4,7 +4,14 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t elastalert:latest .'
+                    def imageExists = sh(script: "docker images -q elastalert:latest", returnStatus: true) == 0
+
+                    if (!imageExists) {
+                        echo 'Image not found locally. Building...'
+                        sh 'docker build -t elastalert:latest .'
+                    } else {
+                        echo 'Image already exists. Skipping build.'
+                    }
                 }
             }
         }
