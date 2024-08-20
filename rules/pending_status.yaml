@@ -58,7 +58,7 @@ ID : {2}"
 alert_text_args: ["index", "createdDate", id]
 smtp_host: smtp.gmail.com
 smtp_port: 587
-smtp_auth_file: smtp.auth.yml
+smtp_auth_file: auth/smtp.auth.yml
 
 realert:
   seconds: 30
