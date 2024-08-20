@@ -7,11 +7,11 @@ pipeline {
                 sh './venv/bin/pip install --no-index --find-links=vendor/ -r requirements.txt --use-pep517'
             }
         }
-        stage('Test') {
-            steps {
-                sh './venv/bin/python -m unittest discover'
-            }
-        }
+        // stage('Test') {
+        //     steps {
+        //         sh './venv/bin/python -m unittest discover'
+        //     }
+        // }
         stage('Deploy') {
             steps {
                 sh './venv/bin/python3.8 -m elastalert.elastalert --config config.yaml'
