@@ -4,7 +4,7 @@ pipeline {
         stage('Setup Environment') {
             steps {
                 sh 'python3.8 -m venv venv'
-                // sh './venv/bin/pip install -r requirements.txt'
+                sh './venv/bin/pip install --no-index --find-links=vendor/ -r requirements.txt'
             }
         }
         stage('Test') {
