@@ -1,0 +1,27 @@
+rules_folder: rules
+# How often ElastAlert will query Elasticsearch
+# The unit can be anything from weeks to seconds
+run_every:
+  seconds: 10
+# ElastAlert will buffer results from the most recent
+# period of time, in case some log sources are not in real time
+buffer_time:
+  minutes: 15
+
+es_host: localhost
+
+# The Elasticsearch port
+es_port: 9200
+# Connect with TLS to Elasticsearch
+use_ssl: false
+
+# Verify TLS certificates
+verify_certs: False
+
+# Show TLS or certificate related warnings
+#ssl_show_warn: True
+es_username: elastic
+es_password: elastic
+writeback_index: elastalert_status
+alert_time_limit:
+  days: 2

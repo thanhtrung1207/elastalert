@@ -1,4 +1,3 @@
-config.yaml
 myenv/
 .tox/
 .coverage
