@@ -1,0 +1,27 @@
+name: "Alert Hearbeat"
+type: any
+index: "elastalert.elasticsearch.uptime-error"
+timestamp_field: "@timestamp"
+
+timeframe:
+  minutes: 5
+
+num_events: 1
+
+alert:
+- telegram
+alert_text: "
+  o  Host: {0}\n
+  o  Name: ocb-test-postgresql \n
+🔔	Message: {1} - Count: {2}"
+alert_text_args: ["host","error.message","num_hits"]
+alert_text_type: alert_text_only
+
+telegram_room_id: "-4263496026"
+telegram_bot_token: "7388639083:AAG8KCdwVkOY7nZ5DR-BDagkrHGUk7u3swg"
+
+aggregation:
+  minutes: 5
+realert:
+  seconds: 5 
+  
