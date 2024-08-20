@@ -7,15 +7,14 @@ pipeline {
                 sh './venv/bin/pip install --no-index --find-links=vendor/ -r requirements.txt --use-pep517'
             }
         }
+        // stage('Test') {
+        //     steps {
+        //         sh './venv/bin/python -m unittest discover'
+        //     }
+        // }
         stage('Deploy') {
             steps {
-                script {
-                    def ruleFiles = sh(script: 'ls rules/*.yaml', returnStdout: true).trim().split('\n')
-
-                    for (file in ruleFiles) {
-                        sh "./venv/bin/python3.8 -m elastalert.elastalert --verbose --rule ${file}"
-                    }
-                }
+                sh './venv/bin/python3.8 -m elastalert.elastalert --config config.yaml'
             }
         }
     }
