@@ -3,7 +3,7 @@ import copy
 import time
 
 from elasticsearch import Elasticsearch
-from elasticsearch.RequestsHttpConnection import RequestsHttpConnection
+from elasticsearch import RequestsHttpConnection
 from elasticsearch.client import _make_path
 from elasticsearch.client import query_params
 from elasticsearch.exceptions import TransportError
