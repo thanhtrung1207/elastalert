@@ -1,5 +1,6 @@
 pipeline {
     agent any
+
     environment {
         DOCKER_REGISTRY = 'trung3108'
         IMAGE_NAME = 'elastalert_container'
@@ -7,11 +8,12 @@ pipeline {
         KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-id'
         DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
     }
+
     stages {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
                 }
             }
         }
@@ -19,7 +21,7 @@ pipeline {
         stage('Tag Docker Image') {
             steps {
                 script {
-                    docker.withRegistry(DOCKER_REGISTRY, DOCKER_CREDENTIALS_ID) {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
                         sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
                     }
                 }
@@ -29,7 +31,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry(DOCKER_REGISTRY, DOCKER_CREDENTIALS_ID) {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
                         sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
                     }
                 }
@@ -43,16 +45,11 @@ pipeline {
                         configs: 'kubernetes/elastalert-deployment.yaml',
                         kubeconfigId: KUBECONFIG_CREDENTIALS_ID
                     )
-                    }
-                }
-            }
-            post {
-                failure {
-                    echo 'Failed'
                 }
             }
         }
     }
+
     post {
         always {
             script {
@@ -65,6 +62,14 @@ pipeline {
                     fi
                 '''
             }
+        }
+
+        success {
+            echo 'Pipeline succeeded'
+        }
+
+        failure {
+            echo 'Pipeline failed'
         }
     }
 }
