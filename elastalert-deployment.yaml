@@ -27,14 +27,3 @@ spec:
       - name: config-volume
         configMap:
           name: elastalert-config
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: elastalert
-spec:
-  ports:
-  - port: 3030
-    targetPort: 3030
-  selector:
-    app: elastalert
