@@ -12,4 +12,4 @@ RUN apt-get update && apt-get install -y gcc build-essential
 RUN pip install --no-cache-dir -r requirements.txt
 
 
-CMD ["python", "-m", "elastalert.elastalert", "--config", "/app/config.yaml"]
+CMD ["python3.8", "-m", "elastalert.elastalert", "--config", "/app/config.yaml","--verbose"]
