@@ -22,7 +22,7 @@ pipeline {
             steps {
                 sh '''
                     docker login -u trung3108 -p trunglaso1
-                    docker push elastalert_container:latest .
+                    docker push elastalert_container:latest
                 '''
             }
         }
