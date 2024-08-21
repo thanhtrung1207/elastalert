@@ -5,7 +5,6 @@ pipeline {
             steps {
                 script {
                     def imageExists = sh(script: "docker images -q elastalert:latest", returnStatus: true) == 0
-
                     if (!imageExists) {
                         echo 'Image not found locally. Building...'
                         sh 'docker build -t elastalert:latest .'
@@ -15,19 +14,29 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
+        stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    sh '''
-                        docker run -d --name elastalert-container \
-                        -v $(pwd)/config.yaml:/app/config.yaml \
-                        -v $(pwd)/rules:/app/rules \
-                        elastalert:latest
-                    '''
+                    withCredentials([kubeconfigFile(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        sh "kubectl apply -f k8s-deployment.yaml"
+                    }
                 }
             }
         }
     }
+    //     stage('Deploy') {
+    //         steps {
+    //             script {
+    //                 sh '''
+    //                     docker run -d --name elastalert-container \
+    //                     -v $(pwd)/config.yaml:/app/config.yaml \
+    //                     -v $(pwd)/rules:/app/rules \
+    //                     elastalert:latest
+    //                 '''
+    //             }
+    //         }
+    //     }
+    // }
     post {
         always {
             script {
@@ -37,3 +46,30 @@ pipeline {
         }
     }
 }
+
+// pipeline {
+//     agent any
+//     stages {
+//         stage('Setup Environment') {
+//             steps {
+//                 sh 'python3.8 -m venv venv'
+//                 sh './venv/bin/pip install --no-index --find-links=vendor/ -r requirements.txt --use-pep517'
+//             }
+//         }
+//         // stage('Test') {
+//         //     steps {
+//         //         sh './venv/bin/python -m unittest discover'
+//         //     }
+//         // }
+//         stage('Deploy') {
+//             steps {
+//                 sh 'nohup ./venv/bin/python3.8 -m elastalert.elastalert --config config.yaml --verbose > elastalert.log 2>&1 &'
+//             }
+//         }
+//     }
+//     post {
+//         always {
+//             sh 'rm -rf venv'
+//         }
+//     }
+// }
