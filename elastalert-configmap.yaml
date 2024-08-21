@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elastalert-config
+data:
+  config.yaml: |
+    rules_folder: rules
+    # How often ElastAlert will query Elasticsearch
+    # The unit can be anything from weeks to seconds
+    run_every:
+      seconds: 10
+    # ElastAlert will buffer results from the most recent
+    # period of time, in case some log sources are not in real time
+    buffer_time:
+      minutes: 15
+    es_host: 192.168.26.239
+    # The Elasticsearch port
+    es_port: 9200
+    # Connect with TLS to Elasticsearch
+    use_ssl: false
+    # Verify TLS certificates
+    verify_certs: false
+    # Show TLS or certificate related warnings
+    # ssl_show_warn: true
+    es_username: elastic
+    es_password: elastic
+    writeback_index: elastalert_status
+    alert_time_limit:
+      days: 2

@@ -1,26 +1,48 @@
 pipeline {
     agent any
+    environment {
+        DOCKER_REGISTRY = 'trung3108'
+        IMAGE_NAME = 'elastalert_container'
+        IMAGE_TAG = 'latest'
+        KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-id'
+        DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
+    }
     stages {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Kiểm tra xem Docker image đã tồn tại chưa
-                    def imageExists = sh(script: "docker images -q elastalert:latest", returnStatus: true) == 0
-                    if (!imageExists) {
-                        echo 'Image not found locally. Building...'
-                        sh 'docker build -t elastalert:latest .'
-                    } else {
-                        echo 'Image already exists. Skipping build.'
+                    sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+                }
+            }
+        }
+
+        stage('Tag Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry(DOCKER_REGISTRY, DOCKER_CREDENTIALS_ID) {
+                        sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
                     }
                 }
             }
         }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry(DOCKER_REGISTRY, DOCKER_CREDENTIALS_ID) {
+                        sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+                    }
+                }
+            }
+        }
+
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    withCredentials([kubeconfigFile(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                        sh 'kubectl apply -f k8s-deployment.yaml'
-                        sh 'kubectl rollout status deployment/elastalert'
+                    kubernetesDeploy(
+                        configs: 'kubernetes/elastalert-deployment.yaml',
+                        kubeconfigId: KUBECONFIG_CREDENTIALS_ID
+                    )
                     }
                 }
             }

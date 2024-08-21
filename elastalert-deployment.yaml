@@ -1,9 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: elastalert-deployment
-  labels:
-    app: elastalert
+  name: elastalert
 spec:
   replicas: 1
   selector:
@@ -16,19 +14,27 @@ spec:
     spec:
       containers:
       - name: elastalert
-        image: elastalert:latest
+        image: trung3108/elastalert_container:latest  
         ports:
         - containerPort: 3030
         volumeMounts:
         - name: config-volume
-          mountPath: /app/config.yaml
-          subPath: config.yaml
-        - name: rules-volume
-          mountPath: /app/rules
+          mountPath: /usr/share/elastalert
+        env:
+        - name: ELASTICSEARCH_HOST
+          value: "http://192.168.26.239:9200"  
       volumes:
       - name: config-volume
         configMap:
           name: elastalert-config
-      - name: rules-volume
-        configMap:
-          name: elastalert-rules
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastalert
+spec:
+  ports:
+  - port: 3030
+    targetPort: 3030
+  selector:
+    app: elastalert
