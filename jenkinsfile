@@ -10,23 +10,28 @@ pipeline {
     }
 
     stages {
-        stage('Pull Docker Image') {
+        stage('Build docker image'){
             steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                        sh "docker pull ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-                    }
-                }
+                sh '''
+                    docker build -t elastalert_container:latest .
+                '''
             }
         }
 
+        stage('Push to registry'){
+            steps {
+                sh '''
+                    docker login -u trung3108 -p trunglao1
+                    docker push elastalert_container:latest .
+                '''
+            }
+        }
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    kubernetesDeploy(
-                        configs: 'kubernetes/elastalert-deployment.yaml',
-                        kubeconfigId: KUBECONFIG_CREDENTIALS_ID
-                    )
+                    sh '''
+                        kubectl apply -f kubernetes/elastalert-deployment.yaml',
+                    '''
                 }
             }
         }
@@ -34,24 +39,7 @@ pipeline {
 
     post {
         always {
-            script {
-                sh '''
-                    if [ "$(docker ps -q -f name=elastalert-container)" ]; then
-                        docker stop elastalert-container || true
-                    fi
-                    if [ "$(docker ps -aq -f status=exited -f name=elastalert-container)" ]; then
-                        docker rm elastalert-container || true
-                    fi
-                '''
-            }
-        }
-
-        success {
-            echo 'Pipeline succeeded'
-        }
-
-        failure {
-            echo 'Pipeline failed'
+            cleanWs()
         }
     }
 }
