@@ -20,6 +20,7 @@ spec:
         volumeMounts:
         - name: config-volume
           mountPath: config.yaml
+          subPath: config.yaml
         env:
         - name: ELASTICSEARCH_HOST
           value: "http://192.168.26.239:9200"  
