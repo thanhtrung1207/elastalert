@@ -37,7 +37,7 @@ pipeline {
                                 sshTransfer(
                                     execCommand: '''
                                         minikube status || minikube start
-                                        kubectl apply -f elastalert-deployment.yaml
+                                        kubectl apply -f ~/elastalert/elastalert-deployment.yaml
                                     '''
                                 )
                             ],
