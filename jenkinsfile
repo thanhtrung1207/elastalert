@@ -21,7 +21,7 @@ pipeline {
         stage('Push to registry'){
             steps {
                 sh '''
-                    docker login -u trung3108 -p trunglao1
+                    docker login -u trung3108 -p trunglaso1
                     docker push elastalert_container:latest .
                 '''
             }
