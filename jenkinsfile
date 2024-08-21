@@ -13,7 +13,7 @@ pipeline {
         stage('Build docker image'){
             steps {
                 sh '''
-                    docker build -t elastalert_container:latest .
+                    docker build -t trung3108/elastalert_container:latest .
                 '''
             }
         }
@@ -21,8 +21,8 @@ pipeline {
         stage('Push to registry'){
             steps {
                 sh '''
-                    docker login -u trung3108 -p trunglaso1
-                    docker push elastalert_container:latest
+                    echo "trunglaso1" | docker login --username foo --password-stdin
+                    docker push trung3108/elastalert_container:latest
                 '''
             }
         }
