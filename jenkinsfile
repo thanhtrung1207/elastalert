@@ -30,9 +30,21 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    sh '''
-                        kubectl apply -f elastalert-deployment.yaml
-                    '''
+                    sshPublisher(publishers: [
+                        sshPublisherDesc(
+                            configName: 'localhost', 
+                            transfers: [
+                                sshTransfer(
+                                    execCommand: '''
+                                        minikube status || minikube start
+                                        kubectl apply -f /path/to/elastalert-deployment.yaml
+                                    '''
+                                )
+                            ],
+                            usePromotionTimestamp: false,
+                            verbose: true
+                        )
+                    ])
                 }
             }
         }
