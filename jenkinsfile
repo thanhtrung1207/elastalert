@@ -13,6 +13,7 @@ pipeline {
         stage('Build docker image'){
             steps {
                 sh '''
+                    cd elastalert
                     docker build -t trung3108/elastalert_container:latest .
                 '''
             }
