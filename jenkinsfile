@@ -10,10 +10,20 @@ pipeline {
     }
 
     stages {
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                }
+            }
+        }
+
         stage('Tag Docker Image') {
             steps {
                 script {
-                    sh "docker tag elastalert:latest ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
+                        sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+                    }
                 }
             }
         }
