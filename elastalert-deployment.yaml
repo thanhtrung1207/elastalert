@@ -19,7 +19,7 @@ spec:
         - containerPort: 3030
         volumeMounts:
         - name: config-volume
-          mountPath: /usr/share/elastalert
+          mountPath: config.yaml
         env:
         - name: ELASTICSEARCH_HOST
           value: "http://192.168.26.239:9200"  
