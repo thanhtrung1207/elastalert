@@ -3,12 +3,12 @@ run_every:
   seconds: 10
 buffer_time:
   minutes: 15
-es_host: 192.168.26.239
-es_port: 9200
-use_ssl: false
-verify_certs: False
-es_username: elastic
-es_password: elastic
+es_host: {{ES_HOST}}
+es_port: {{ES_PORT}}
+use_ssl: {{USE_SSL}}
+verify_certs: {{VERIFY_CERTS}}
+es_username: {{ES_USERNAME}}
+es_password: {{ES_PASSWORD}}
 writeback_index: elastalert_status
 alert_time_limit:
   days: 2

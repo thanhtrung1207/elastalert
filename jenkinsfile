@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        PROJECT_CONFIG_FILE = 'config.yaml'
         DOCKER_REGISTRY = 'trung3108'
         IMAGE_NAME = 'elastalert_container'
         IMAGE_TAG = 'latest'
@@ -10,9 +11,20 @@ pipeline {
     }
 
     stages {
+        stage('Inject environment variables') {
+            steps {
+                sh """
+                    chmod +x ./scripts/envresolver.sh
+                    
+                    ./scripts/envresolver.sh ${PROJECT_CONFIG_FILE}
+                """
+            }
+        }
+
         stage('Build docker image') {
             steps {
                 sh '''
+
                     docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .
                 '''
             }
