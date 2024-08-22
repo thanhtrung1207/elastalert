@@ -24,7 +24,7 @@ pipeline {
         stage('Build docker image') {
             steps {
                 script {
-                    docker.build("${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}", "--progress=plain .")
+                    docker.build("${env.DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}", "--progress=plain .")
                 }
             }
         }
