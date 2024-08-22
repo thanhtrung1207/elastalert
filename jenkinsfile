@@ -20,11 +20,12 @@ pipeline {
 
         stage('Push to registry'){
             steps {
-                withCredentials ([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')])
+                withCredentials ([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]){
                 sh '''
                     echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin
                     docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
                 '''
+                }
             }
         }
 
