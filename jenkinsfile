@@ -10,7 +10,7 @@ pipeline {
     }
 
     stages {
-        stage('Build docker image'){
+        stage('Build docker image') {
             steps {
                 sh '''
                     docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .
@@ -18,13 +18,13 @@ pipeline {
             }
         }
 
-        stage('Push to registry'){
+        stage('Push to registry') {
             steps {
-                withCredentials ([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]){
-                sh '''
-                    echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin
-                    docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
-                '''
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin
+                        docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
+                    '''
                 }
             }
         }
@@ -34,7 +34,7 @@ pipeline {
                 script {
                     sshPublisher(publishers: [
                         sshPublisherDesc(
-                            configName: 'localhost', 
+                            configName: 'localhost',
                             transfers: [
                                 sshTransfer(
                                     execCommand: '''
@@ -51,10 +51,28 @@ pipeline {
             }
         }
     }
-
     post {
         always {
-            cleanWs()
+            script {
+                sshPublisher(publishers: [
+                    sshPublisherDesc(
+                        configName: 'localhost',
+                        transfers: [
+                            sshTransfer(
+                                execCommand: '''
+                                    kubectl delete -f ~/elastalert/elastalert-deployment.yaml || true
+                                '''
+                            )
+                        ],
+                        usePromotionTimestamp: false,
+                        verbose: true
+                    )
+                ])
+                sh '''
+                    docker rmi ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} || true
+                '''
+                cleanWs()
+            }
         }
     }
 }
