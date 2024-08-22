@@ -54,20 +54,6 @@ pipeline {
     post {
         always {
             script {
-                sshPublisher(publishers: [
-                    sshPublisherDesc(
-                        configName: 'localhost',
-                        transfers: [
-                            sshTransfer(
-                                execCommand: '''
-                                    kubectl delete -f ~/elastalert/elastalert-deployment.yaml || true
-                                '''
-                            )
-                        ],
-                        usePromotionTimestamp: false,
-                        verbose: true
-                    )
-                ])
                 sh '''
                     docker rmi ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} || true
                 '''
