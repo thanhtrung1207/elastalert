@@ -8,7 +8,7 @@ pipeline {
         IMAGE_TAG = 'latest'
         KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-id'
         DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
-        DOCKER_REGISTRY_URL = ''
+        // DOCKER_REGISTRY_URL = '' //gán url vào biến 
     }
 
     stages {
@@ -24,7 +24,7 @@ pipeline {
         stage('Build docker image') {
             steps {
                 script {
-                    docker.build("${env.DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}", "--progress=plain .")
+                    docker.build("${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}", "--progress=plain .")
                 }
             }
         }
@@ -32,7 +32,7 @@ pipeline {
         stage('Push to registry') {
             steps {
                 script {
-                    docker.withRegistry("${DOCKER_REGISTRY_URL}", "${DOCKER_CREDENTIALS_ID}") {
+                    docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") { // thay đổi '' thành docker registry url
                         docker.image("${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}").push()
                     }
                 }
