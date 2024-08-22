@@ -14,8 +14,8 @@ pipeline {
         stage('Inject environment variables') {
             steps {
                 sh """
-                    chmod +x ./scripts/envresolver.sh
-                    
+                    chmod +x ./scripts/envsolver.sh
+
                     ./scripts/envresolver.sh ${PROJECT_CONFIG_FILE}
                 """
             }
