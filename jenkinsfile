@@ -16,7 +16,7 @@ pipeline {
                 sh """
                     chmod +x ./script/envsolver.sh
 
-                    ./scripts/envresolver.sh ${PROJECT_CONFIG_FILE}
+                    ./script/envsolver.sh ${PROJECT_CONFIG_FILE}
                 """
             }
         }
