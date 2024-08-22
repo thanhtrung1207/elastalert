@@ -15,7 +15,6 @@ pipeline {
             steps {
                 sh """
                     chmod +x ./script/envsolver.sh
-
                     ./script/envsolver.sh ${PROJECT_CONFIG_FILE}
                 """
             }
@@ -23,19 +22,18 @@ pipeline {
 
         stage('Build docker image') {
             steps {
-                sh '''
-                    docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .
-                '''
+                script {
+                    docker.build("${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}", "--progress=plain .")
+                }
             }
         }
 
         stage('Push to registry') {
             steps {
-                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''
-                        echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin
-                        docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
-                    '''
+                script {
+                    docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") {
+                        docker.image("${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}").push()
+                    }
                 }
             }
         }
