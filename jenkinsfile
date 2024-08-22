@@ -13,16 +13,17 @@ pipeline {
         stage('Build docker image'){
             steps {
                 sh '''
-                    docker build -t trung3108/elastalert_container:latest .
+                    docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .
                 '''
             }
         }
 
         stage('Push to registry'){
             steps {
+                withCredentials ([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')])
                 sh '''
-                    echo "trunglaso1" | docker login --username trung3108 --password-stdin
-                    docker push trung3108/elastalert_container:latest
+                    echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin
+                    docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
                 '''
             }
         }
