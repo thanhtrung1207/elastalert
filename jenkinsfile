@@ -8,6 +8,7 @@ pipeline {
         IMAGE_TAG = 'latest'
         KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-id'
         DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
+        DOCKER_REGISTRY_URL = ''
     }
 
     stages {
@@ -31,7 +32,7 @@ pipeline {
         stage('Push to registry') {
             steps {
                 script {
-                    docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") {
+                    docker.withRegistry("${DOCKER_REGISTRY_URL}", "${DOCKER_CREDENTIALS_ID}") {
                         docker.image("${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}").push()
                     }
                 }
