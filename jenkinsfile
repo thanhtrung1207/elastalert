@@ -32,7 +32,7 @@ pipeline {
         stage('Push to registry') {
             steps {
                 script {
-                    docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") { // thay đổi '' thành docker registry url
+                    docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") { 
                         docker.image("${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}").push()
                     }
                 }

@@ -26,6 +26,22 @@ from .util import ts_to_dt_with_format
 from .util import unix_to_dt
 from .util import unixms_to_dt
 
+class EnvVarLoader(SafeLoader):
+    pass
+
+def env_var_constructor(loader, node):
+    value = loader.construct_scalar(node)
+    
+    env_var_match = re.match(r'\$\{(\w+):?(.*)?\}', value)
+    if env_var_match:
+        env_var_name = env_var_match.group(1)
+        default_value = env_var_match.group(2) or ""  
+        return os.getenv(env_var_name, default_value)  
+    else:
+        return value
+
+# Đăng ký constructor cho tag `!ENV`
+EnvVarLoader.add_constructor('!ENV', env_var_constructor)
 
 class RulesLoader(object):
     # import rule dependency
@@ -194,7 +210,9 @@ class RulesLoader(object):
 
         self.import_rules.pop(filename, None)  # clear `filename` dependency
         while True:
-            loaded = self.get_yaml(filename)
+            with open(filename, 'r') as file:
+                loaded = yaml.load(file, Loader=EnvVarLoader)
+            # loaded = self.get_yaml(filename)
 
             # Special case for merging filters - if both files specify a filter merge (AND) them
             if 'filter' in rule and 'filter' in loaded:

@@ -17,7 +17,7 @@ alert_text: "
 alert_text_args: ["host","error.message","num_hits"]
 alert_text_type: alert_text_only
 
-telegram_room_id: "-4263496026"
+telegram_room_id: !ENV ${TELEGRAM_ROOM_ID:-4263496026} 
 telegram_bot_token: "7388639083:AAG8KCdwVkOY7nZ5DR-BDagkrHGUk7u3swg"
 
 aggregation:
