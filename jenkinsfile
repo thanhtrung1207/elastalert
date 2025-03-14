@@ -28,13 +28,6 @@ pipeline {
                     def image = docker.build("${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}", "--no-cache --progress=plain .")
                     
                     // Kiểm tra xem image có tồn tại trước khi xóa
-                    sh """
-                        if docker images | grep -q '${IMAGE_NAME}'; then
-                            docker rmi ${IMAGE_NAME}:${IMAGE_TAG}
-                        else
-                            echo "Image ${IMAGE_NAME}:${IMAGE_TAG} does not exist, skipping removal."
-                        fi
-                    """
                 }
             }
         }
