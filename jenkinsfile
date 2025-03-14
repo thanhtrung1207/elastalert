@@ -9,6 +9,7 @@ pipeline {
         KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-id'
         DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
         // DOCKER_REGISTRY_URL = '' //gán url vào biến 
+        PATH = "/usr/local/bin:$PATH"
     }
 
     stages {
