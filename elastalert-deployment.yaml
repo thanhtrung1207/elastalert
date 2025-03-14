@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastalert
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elastalert
+  template:
+    metadata:
+      labels:
+        app: elastalert
+    spec:
+      containers:
+      - name: elastalert
+        image: trung3108/elastalert_container:latest  
+        ports:
+        - containerPort: 3030
+        volumeMounts:
+        - name: config-volume
+          mountPath: config.yaml
+          subPath: config.yaml
+        env:
+        - name: ELASTICSEARCH_HOST
+          value: "http://192.168.26.239:9200"  
+      volumes:
+      - name: config-volume
+        configMap:
+          name: elastalert-config

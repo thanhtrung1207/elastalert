@@ -1,12 +1,70 @@
 pipeline {
     agent any
-    stages{
-        stage('Build and Package'){
-            steps{
-                script{
-                    sh 'pip install -r requirements.txt'
+
+    environment {
+        PROJECT_CONFIG_FILE = 'config.yaml'
+        DOCKER_REGISTRY = 'trung3108'
+        IMAGE_NAME = 'elastalert_container'
+        IMAGE_TAG = 'latest'
+        KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-id'
+        DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
+        // DOCKER_REGISTRY_URL = '' //gán url vào biến 
+    }
+
+    stages {
+        stage('Inject environment variables') {
+            steps {
+                sh """
+                    chmod +x ./script/envsolver.sh
+                    ./script/envsolver.sh ${PROJECT_CONFIG_FILE}
+                """
+            }
+        }
+
+        stage('Build docker image') {
+            steps {
+                script {
+                    docker.build("${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}", "--progress=plain .")
+                    sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}}"
                 }
             }
+        }
+
+        stage('Push to registry') {
+            steps {
+                script {
+                    docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") { 
+                        docker.image("${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}").push()
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    sshPublisher(publishers: [
+                        sshPublisherDesc(
+                            configName: 'localhost',
+                            transfers: [
+                                sshTransfer(
+                                    execCommand: '''
+                                        minikube status || minikube start
+                                        kubectl apply -f ~/elastalert/elastalert-deployment.yaml
+                                    '''
+                                )
+                            ],
+                            usePromotionTimestamp: false,
+                            verbose: true
+                        )
+                    ])
+                }
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
         }
     }
 }
