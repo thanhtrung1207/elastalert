@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Parse JSON and Set Variables') {
+        stage('Parse JSON') {
             steps {
                 script {
                     try {
@@ -15,13 +15,20 @@ pipeline {
 
                         echo "Extracted Source URL: ${env.SOURCE_URL}"
                         echo "Extracted Source Branch: ${env.SOURCE_BRANCH}"
-
-                        if (!env.SOURCE_URL || !env.SOURCE_BRANCH) {
-                            error "ERROR: SOURCE_URL hoặc SOURCE_BRANCH không được để trống!"
-                        }
                     } catch (Exception e) {
                         error "Failed to parse JSON: ${e.message}"
                     }
+                }
+            }
+        }
+
+        stage('Validate Variables') {
+            steps {
+                script {
+                    if (!env.SOURCE_URL || !env.SOURCE_BRANCH) {
+                        error "ERROR: SOURCE_URL or SOURCE_BRANCH is empty!"
+                    }
+                    echo "Validation passed!"
                 }
             }
         }
