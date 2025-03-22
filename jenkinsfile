@@ -10,6 +10,7 @@ pipeline {
         stage('Parse JSON and Set Variables') {             
             steps {
                 script {
+                    //test
                     def jsonSlurper = new groovy.json.JsonSlurper()
                     def config = jsonSlurper.parseText(params."meta-data")
 
