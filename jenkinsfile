@@ -7,7 +7,7 @@ pipeline {
                 script {
                     try {
                         def jsonSlurper = new groovy.json.JsonSlurper()
-                        def jsonText = params.get("meta-data", '{}')?.trim()
+                        def jsonText = params."meta-data"
                         def config = jsonSlurper.parseText(jsonText)
 
                         // Extract values safely
