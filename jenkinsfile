@@ -1,25 +1,36 @@
 pipeline {
     agent any
 
+    parameters {
+        string(name: 'meta-data', defaultValue: '{"source_code": {"url": "test.com", "branch": "dev"}}', description: 'JSON Metadata')
+    }
+
     stages {
         stage('Parse JSON and Set Variables') {
             steps {
                 script {
+                    // Khởi tạo JsonSlurper
                     def jsonSlurper = new groovy.json.JsonSlurper()
-                    def jsonText = params."meta-data" ?: '{}'
+                    
+                    // Lấy giá trị JSON từ params["meta-data"], đảm bảo không bị null
+                    def jsonText = params["meta-data"] ?: '{}'
                     def config = jsonSlurper.parseText(jsonText)
 
-                    def sourceUrl = config?.source_code?.url ?: 'Not Provided'
-                    def sourceBranch = config?.source_code?.branch ?: 'Not Provided'
+                    // Trích xuất thông tin từ JSON với kiểm tra null-safe
+                    env.SOURCE_URL = config?.source_code?.url ?: 'Not Provided'
+                    env.SOURCE_BRANCH = config?.source_code?.branch ?: 'Not Provided'
 
-                    echo "Extracted Source URL: ${sourceUrl}"
-                    echo "Extracted Source Branch: ${sourceBranch}"
+                    // In giá trị để kiểm tra
+                    echo "Extracted Source URL: ${env.SOURCE_URL}"
+                    echo "Extracted Source Branch: ${env.SOURCE_BRANCH}"
+                }
+            }
+        }
 
-                    // Dùng withEnv để cập nhật biến môi trường
-                    withEnv(["SOURCE_URL=${sourceUrl}", "SOURCE_BRANCH=${sourceBranch}"]) {
-                        echo "Updated Env Source URL: ${env.SOURCE_URL}"
-                        echo "Updated Env Source Branch: ${env.SOURCE_BRANCH}"
-                    }
+        stage('Use Variables') {
+            steps {
+                script {
+                    echo "Using Env Variables: ${env.SOURCE_URL}, ${env.SOURCE_BRANCH}"
                 }
             }
         }
