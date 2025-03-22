@@ -1,32 +1,33 @@
-pipeline {     
-    agent any      
+pipeline {
+    agent any
 
-    environment {
-        SOURCE_URL = ""
-        SOURCE_BRANCH = ""
-    }      
-
-    stages {         
-        stage('Parse JSON and Set Variables') {             
+    stages {
+        stage('Parse JSON and Set Variables') {
             steps {
                 script {
-                    //test
                     def jsonSlurper = new groovy.json.JsonSlurper()
-                    def config = jsonSlurper.parseText(params.meta-data)
+                    def jsonText = params."meta-data" ?: '{}'
+                    def config = jsonSlurper.parseText(jsonText)
 
-                    env.SOURCE_URL = config.source_code.url
-                    env.SOURCE_BRANCH = config.source_code.branch
+                    def sourceUrl = config?.source_code?.url ?: 'Not Provided'
+                    def sourceBranch = config?.source_code?.branch ?: 'Not Provided'
 
-                    echo "Extracted Source URL: ${env.SOURCE_URL}"
-                    echo "Extracted Source Branch: ${env.SOURCE_BRANCH}"
+                    echo "Extracted Source URL: ${sourceUrl}"
+                    echo "Extracted Source Branch: ${sourceBranch}"
+
+                    // Dùng withEnv để cập nhật biến môi trường
+                    withEnv(["SOURCE_URL=${sourceUrl}", "SOURCE_BRANCH=${sourceBranch}"]) {
+                        echo "Updated Env Source URL: ${env.SOURCE_URL}"
+                        echo "Updated Env Source Branch: ${env.SOURCE_BRANCH}"
+                    }
                 }
-            }         
-        }     
-    }     
+            }
+        }
+    }
 
-    post {         
-        always {             
-            cleanWs()         
-        }     
-    } 
+    post {
+        always {
+            cleanWs()
+        }
+    }
 }
