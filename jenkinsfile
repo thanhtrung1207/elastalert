@@ -7,7 +7,7 @@ pipeline {
                 script {
                     try {
                         def jsonSlurper = new groovy.json.JsonSlurper()
-                        def jsonText = params.META_DATA?.trim() ?: '{}'
+                        def jsonText = params."meta-data"?.trim() ?: '{}'
                         def config = jsonSlurper.parseText(jsonText)
 
                         env.SOURCE_URL = config?.source_code?.url ?: 'Not Provided'
