@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    parameters {
-        string(name: 'meta-data', defaultValue: '{"source_code": {"url": "test.com", "branch": "dev"}}', description: 'JSON Metadata')
-    }
-
     stages {
         stage('Parse JSON and Set Variables') {
             steps {
@@ -12,7 +8,6 @@ pipeline {
                     // Khởi tạo JsonSlurper
                     def jsonSlurper = new groovy.json.JsonSlurper()
                     
-                    // Lấy giá trị JSON từ params["meta-data"], đảm bảo không bị null
                     def jsonText = params["meta-data"] ?: '{}'
                     def config = jsonSlurper.parseText(jsonText)
 
