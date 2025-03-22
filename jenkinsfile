@@ -5,19 +5,19 @@ pipeline {
         stage('Parse JSON and Set Variables') {
             steps {
                 script {
-                    // Khởi tạo JsonSlurper
-                    def jsonSlurper = new groovy.json.JsonSlurper()
-                    
-                    def jsonText = params["meta-data"] ?: '{}'
-                    def config = jsonSlurper.parseText(jsonText)
+                    try {
+                        def jsonSlurper = new groovy.json.JsonSlurper()
+                        def jsonText = params.META_DATA?.trim() ?: '{}'
+                        def config = jsonSlurper.parseText(jsonText)
 
-                    // Trích xuất thông tin từ JSON với kiểm tra null-safe
-                    env.SOURCE_URL = config?.source_code?.url ?: 'Not Provided'
-                    env.SOURCE_BRANCH = config?.source_code?.branch ?: 'Not Provided'
+                        env.SOURCE_URL = config?.source_code?.url ?: 'Not Provided'
+                        env.SOURCE_BRANCH = config?.source_code?.branch ?: 'Not Provided'
 
-                    // In giá trị để kiểm tra
-                    echo "Extracted Source URL: ${env.SOURCE_URL}"
-                    echo "Extracted Source Branch: ${env.SOURCE_BRANCH}"
+                        echo "Extracted Source URL: ${env.SOURCE_URL}"
+                        echo "Extracted Source Branch: ${env.SOURCE_BRANCH}"
+                    } catch (Exception e) {
+                        error "Failed to parse JSON: ${e.message}"
+                    }
                 }
             }
         }
