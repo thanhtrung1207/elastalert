@@ -1,73 +1,31 @@
-pipeline {
-    agent any
+pipeline {     
+    agent any      
 
     environment {
-        PROJECT_CONFIG_FILE = 'config.yaml'
-        DOCKER_REGISTRY = 'trung3108'
-        IMAGE_NAME = 'elastalert_container'
-        IMAGE_TAG = 'latest'
-        KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-id'
-        DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
-        // DOCKER_REGISTRY_URL = '' //gán url vào biến 
-        PATH = "/usr/local/bin:$PATH"
-    }
+        SOURCE_URL = ""
+        SOURCE_BRANCH = ""
+    }      
 
-    stages {
-        stage('Inject environment variables') {
-            steps {
-                sh """
-                    chmod +x ./script/envsolver.sh
-                    ./script/envsolver.sh ${PROJECT_CONFIG_FILE}
-                """
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps { 
-                script {
-                    def image = docker.build("${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}", "--no-cache --progress=plain .")
-                    
-                    // Kiểm tra xem image có tồn tại trước khi xóa
-                }
-            }
-        }
-
-
-        stage('Push to registry') {
+    stages {         
+        stage('Parse JSON and Set Variables') {             
             steps {
                 script {
-                    docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") { 
-                        docker.image("${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}").push()
-                    }
-                }
-            }
-        }
+                    def jsonSlurper = new groovy.json.JsonSlurper()
+                    def config = jsonSlurper.parseText(params."meta-data")
 
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    sshPublisher(publishers: [
-                        sshPublisherDesc(
-                            configName: 'localhost',
-                            transfers: [
-                                sshTransfer(
-                                    execCommand: '''
-                                        minikube status || minikube start
-                                        kubectl apply -f ~/elastalert/elastalert-deployment.yaml
-                                    '''
-                                )
-                            ],
-                            usePromotionTimestamp: false,
-                            verbose: true
-                        )
-                    ])
+                    env.SOURCE_URL = config.source_code.url
+                    env.SOURCE_BRANCH = config.source_code.branch
+
+                    echo "Extracted Source URL: ${env.SOURCE_URL}"
+                    echo "Extracted Source Branch: ${env.SOURCE_BRANCH}"
                 }
-            }
-        }
-    }
-    post {
-        always {
-            cleanWs()
-        }
-    }
+            }         
+        }     
+    }     
+
+    post {         
+        always {             
+            cleanWs()         
+        }     
+    } 
 }
